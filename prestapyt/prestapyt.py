@@ -566,13 +566,20 @@ class PrestaShopWebServiceDict(PrestaShopWebService):
             PrestaShopWebServiceDict, self).search(resource, options=options)
 
         elems = dive(response, level=2)
-        # when there is only 1 resource, we do not have a list in the response
-        if not elems:
-            return []
-        elif isinstance(elems, list):
-            ids = [int(elem['attrs']['id']) for elem in elems]
+        # There is no key attrs if we use display option so we return response as is
+        if 'display' in options:
+            if not elems:
+                return []
+            else:
+                return elems
         else:
-            ids = [int(elems['attrs']['id'])]
+            if not elems:
+                return []
+            elif isinstance(elems, list):
+                ids = [int(elem['attrs']['id']) for elem in elems]
+            else:
+                # when there is only 1 resource, we do not have a list in the response
+                ids = [int(elems['attrs']['id'])]
         return ids
 
     def get_with_url(self, url):
